@@ -28,6 +28,25 @@
       add-new))
   
 
+(defn left [board]
+  
+  )
 
-##_(defn next-state [board ])
+(defn right [board]
+  )
+
+(defn up [board]
+  )
+
+(defn down [board]
+  )
+
+
+(defn next-state [board input]
+  (add-new
+   ((case input
+      :left left
+      :right right
+      :up up
+      :down down) board)))
 
