@@ -29,11 +29,27 @@
   
 
 (defn left [board]
-  
-  )
+  (mapv
+   (fn [x] (let [reduced
+            (loop [res []
+                   rem (remove nil? x)]
+              (let [f (first rem)
+                    s (second rem)
+                    [nres nrem]
+                    (if (and f s (= f s))
+                      [(conj res (+ f s)) (drop 2 rem)]
+                      [(conj res f) (drop 1 rem)])]
+                (if (empty? nrem)
+                  nres
+                  (recur nres nrem))))]
+        (take 4 (concat reduced (repeat nil)))))
+   board))
 
 (defn right [board]
-  )
+  (->> board
+       (map reverse)
+       left
+       (mapv reverse)))
 
 (defn up [board]
   )
@@ -50,3 +66,7 @@
       :up up
       :down down) board)))
 
+
+
+(let [i [4 nil 4 2]]
+  )
