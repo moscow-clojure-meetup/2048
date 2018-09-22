@@ -55,11 +55,16 @@
   (apply mapv vector m))
 
 (defn up [board]
-  )
+  (->> board
+       transpose
+       left
+       transpose))
 
 (defn down [board]
-  )
-
+  (->> board
+       transpose
+       right
+       transpose))
 
 (defn next-state [board input]
   (add-new
@@ -68,4 +73,8 @@
       :right right
       :up up
       :down down) board)))
+
+(defn print-board [board]
+  (doseq [r board]
+    (println r)))
 
