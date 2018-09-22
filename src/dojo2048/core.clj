@@ -6,16 +6,47 @@
    [nil nil nil nil]
    [nil nil nil nil]])
 
-(defn init-board []
-  (let [board (make-array Long/TYPE 4 4)
-        [x1 y1 x2 y2]
-        (repeatedly 4 #(rand-int 4))]
-    (if (= [x1 y1] [x2 y2])
-      (init-board)
-      (do
-        (aset board x1 y1 2)
-        (aset board x2 y2 2)
-        board))))
+;; if nil --> game over
+(defn get-empty [board]
+  (let [empties
+        (into [] (for [x (range 4)
+                       y (range 4)
+                       :when (nil? (get-in board [y x]))]
+                   [x y]))]
+    (rand-nth empties)))
 
-#_ (defn next-state [board ])
+
+(defn add-new [board]
+  (let [[x y] (get-empty board)
+        v (rand-nth [2 4])]
+    (assoc-in board [y x] v)))
+
+
+(defn init-board []
+  (-> empty-board
+      add-new
+      add-new))
+  
+
+(defn left [board]
+  
+  )
+
+(defn right [board]
+  )
+
+(defn up [board]
+  )
+
+(defn down [board]
+  )
+
+
+(defn next-state [board input]
+  (add-new
+   ((case input
+      :left left
+      :right right
+      :up up
+      :down down) board)))
 
