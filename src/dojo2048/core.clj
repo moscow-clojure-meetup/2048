@@ -1,4 +1,7 @@
-(ns dojo2048.core)
+(ns dojo2048.core
+  (:require [lanterna.screen :as s]
+            [clojure.string :as str])
+  (:gen-class))
 
 (def empty-board
   [[nil nil nil nil]
@@ -78,3 +81,29 @@
   (doseq [r board]
     (println r)))
 
+(defn board-to-screen [board scr]
+  (for [i (range 4)]
+    (s/put-string scr 10 (+ 10 i) "AAA")))
+
+(defn -main []
+  (let [scr (s/get-screen)]
+    (s/start scr)
+
+    (loop [board (init-board)]
+      (doseq [i (range 4)]
+        (let [x (str/join "|" (map #(if (nil? %) "     " (format "%5d" %)) (get board i)))]
+          (s/put-string scr 10 (+ 10 i) (str "|" x "|")))
+        (s/redraw scr))
+      (let [i (loop [inp (s/get-key-blocking scr)]
+                (if (#{:up :down :left :right} inp)
+                  inp
+                  (recur (s/get-key-blocking scr))))
+
+            next (next-state board i)]
+        (if (nil? next)
+          (do
+            (s/put-string scr 15 15 "GAME OVER!")
+            (s/redraw scr))
+          (recur next))))
+    (s/get-key-blocking scr)
+    (s/stop scr)))
