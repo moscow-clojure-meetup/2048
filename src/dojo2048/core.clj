@@ -51,6 +51,9 @@
        left
        (mapv reverse)))
 
+(defn transpose [m]
+  (apply mapv vector m))
+
 (defn up [board]
   )
 
@@ -66,7 +69,3 @@
       :up up
       :down down) board)))
 
-
-
-(let [i [4 nil 4 2]]
-  )
