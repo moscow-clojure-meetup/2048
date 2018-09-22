@@ -45,14 +45,15 @@
                 (if (empty? nrem)
                   nres
                   (recur nres nrem))))]
-        (take 4 (concat reduced (repeat nil)))))
+            (vec (take 4 (concat reduced (repeat nil))))))
    board))
 
 (defn right [board]
   (->> board
        (map reverse)
        left
-       (mapv reverse)))
+       (mapv reverse)
+       (mapv vec)))
 
 (defn transpose [m]
   (apply mapv vector m))
@@ -70,12 +71,13 @@
        transpose))
 
 (defn next-state [board input]
-  (add-new
-   ((case input
-      :left left
-      :right right
-      :up up
-      :down down) board)))
+  (let [x ((case input
+             :left left
+             :right right
+             :up up
+             :down down) board)]
+    (println x)
+    (add-new x)))
 
 (defn print-board [board]
   (doseq [r board]
