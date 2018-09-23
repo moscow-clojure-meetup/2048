@@ -9,20 +9,21 @@
    [nil nil nil nil]
    [nil nil nil nil]])
 
-;; if nil --> game over
+
 (defn get-empty [board]
   (let [empties
-        (into [] (for [x (range 4)
-                       y (range 4)
-                       :when (nil? (get-in board [y x]))]
-                   [x y]))]
-    (rand-nth empties)))
+        (for [x (range 4)
+              y (range 4)
+              :when (nil? (get-in board [y x]))]
+          [x y])]
+    (and (seq empties)
+         (rand-nth empties))))
 
 
 (defn add-new [board]
   (let [[x y] (get-empty board)
-        v (rand-nth [2 4])]
-    (assoc-in board [y x] v)))
+        v (rand-nth [2 2 2 2 4])]
+    (and x y (assoc-in board [y x] v))))
 
 
 (defn init-board []
@@ -76,35 +77,32 @@
              :right right
              :up up
              :down down) board)]
-    (println x)
     (add-new x)))
 
-(defn print-board [board]
-  (doseq [r board]
-    (println r)))
+(def splitter "-------------------------")
 
 (defn board-to-screen [board scr]
-  (for [i (range 4)]
-    (s/put-string scr 10 (+ 10 i) "AAA")))
+  (s/put-string scr 0 0  splitter)
+  (doseq [[i ii] (map vector (range 1 12 2) (range 4))]
+    (let [x (str/join
+             "|" (map #(if (nil? %) "     " (format "%5d" %)) (get board ii)))]
+      (s/put-string scr 0  i (str "|" x "|")))
+    (s/put-string scr 0 (inc i) splitter)
+    (s/redraw scr)))
 
 (defn -main []
-  (let [scr (s/get-screen)]
+  (let [scr (s/get-screen :swing {:cols 25 :rows 9})]
     (s/start scr)
-
     (loop [board (init-board)]
-      (doseq [i (range 4)]
-        (let [x (str/join "|" (map #(if (nil? %) "     " (format "%5d" %)) (get board i)))]
-          (s/put-string scr 10 (+ 10 i) (str "|" x "|")))
-        (s/redraw scr))
+      (board-to-screen board scr)
       (let [i (loop [inp (s/get-key-blocking scr)]
-                (if (#{:up :down :left :right} inp)
-                  inp
-                  (recur (s/get-key-blocking scr))))
-
+                (or (#{:up :down :left :right} inp)
+                    (recur (s/get-key-blocking scr))))
             next (next-state board i)]
         (if (nil? next)
           (do
-            (s/put-string scr 15 15 "GAME OVER!")
+            (s/clear scr)
+            (s/put-string scr 0 0 "GAME OVER!")
             (s/redraw scr))
           (recur next))))
     (s/get-key-blocking scr)
